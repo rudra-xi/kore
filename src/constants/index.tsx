@@ -1,4 +1,5 @@
 import {
+	BadgeInfoIcon,
 	BookOpenIcon,
 	Code2Icon,
 	FolderGit2Icon,
@@ -168,6 +169,11 @@ export const APP_SIDEBAR_DATA = {
 
 	navSecondary: [
 		{
+			title: "Information",
+			url: "/info",
+			icon: <BadgeInfoIcon />,
+		},
+		{
 			title: "Help & Docs",
 			url: "/help",
 			icon: <BookOpenIcon />,
@@ -197,3 +203,10 @@ export const APP_SIDEBAR_DATA = {
 		},
 	],
 };
+
+export const FOOTER_LINK_DATA = [
+	{ title: "Dashboard", href: "/dashboard" },
+	{ title: "Snippets", href: "/snippets" },
+	{ title: "Library", href: "/library" },
+	{ title: "Collections", href: "/collections" },
+];
