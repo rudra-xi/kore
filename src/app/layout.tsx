@@ -70,7 +70,9 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${geistMono.variable} antialiased`}>
-				<LayoutProvider>{children}</LayoutProvider>
+				<LayoutProvider>
+					<main className={"page-padding overflow-x-hidden"}>{children}</main>
+				</LayoutProvider>
 			</body>
 		</html>
 	);
