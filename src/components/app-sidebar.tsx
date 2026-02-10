@@ -1,16 +1,5 @@
 "use client";
 
-import {
-	BookOpenIcon,
-	Code2Icon,
-	FolderGit2Icon,
-	Grid2X2Icon,
-	LayoutDashboardIcon,
-	SendIcon,
-	Settings2Icon,
-	SparklesIcon,
-	WrenchIcon,
-} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
@@ -28,126 +17,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
-const data = {
-	user: {
-		// TODO: wire with auth/user from server/db
-		name: "rudra-xi",
-		email: "m@example.com",
-		avatar: "/avatars/rudra.jpg",
-	},
-
-	navMain: [
-		{
-			title: "Dashboard",
-			url: "/dashboard",
-			icon: <LayoutDashboardIcon />,
-			isActive: true,
-			items: [
-				{
-					title: "Overview",
-					url: "/dashboard",
-				},
-				{
-					title: "Recent",
-					url: "/dashboard/recent",
-				},
-				{
-					title: "Favorites",
-					url: "/dashboard/favorites",
-				},
-			],
-		},
-		{
-			title: "Snippets",
-			url: "/snippets",
-			icon: <Code2Icon />,
-			items: [
-				{
-					title: "My Snippets",
-					url: "/snippets",
-				},
-				{
-					title: "Common Snippets",
-					url: "/snippets/common",
-				},
-				{
-					title: "Tags",
-					url: "/snippets/tags",
-				},
-			],
-		},
-		{
-			title: "Library",
-			url: "/library",
-			icon: <FolderGit2Icon />,
-			items: [
-				{
-					title: "Collections",
-					url: "/collections",
-				},
-				{
-					title: "Templates",
-					url: "/templates",
-				},
-				{
-					title: "Archive",
-					url: "/archive",
-				},
-			],
-		},
-		{
-			title: "Settings",
-			url: "/settings",
-			icon: <Settings2Icon />,
-			items: [
-				{
-					title: "General",
-					url: "/settings",
-				},
-				{
-					title: "Editor",
-					url: "/settings/editor",
-				},
-				{
-					title: "Appearance",
-					url: "/settings/appearance",
-				},
-			],
-		},
-	],
-
-	navSecondary: [
-		{
-			title: "Help & Docs",
-			url: "/help",
-			icon: <BookOpenIcon />,
-		},
-		{
-			title: "Feedback",
-			url: "/feedback",
-			icon: <SendIcon />,
-		},
-	],
-
-	projects: [
-		{
-			name: "React Snippets",
-			url: "/collections/react",
-			icon: <Grid2X2Icon />,
-		},
-		{
-			name: "Next.js Snippets",
-			url: "/collections/nextjs",
-			icon: <SparklesIcon />,
-		},
-		{
-			name: "Utilities",
-			url: "/collections/utils",
-			icon: <WrenchIcon />,
-		},
-	],
-};
+import { APP_SIDEBAR_DATA } from "@/constants";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
@@ -155,7 +25,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<SidebarMenuButton size="lg" render={<Link href="#" />}>
+						<SidebarMenuButton
+							size="lg"
+							render={<Link href="/dashboard" />}
+						>
 							<div className="bg-sidebar-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg">
 								<Image
 									src={logo}
@@ -173,12 +46,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
-				<NavProjects projects={data.projects} />
-				<NavSecondary items={data.navSecondary} className="mt-auto" />
+				<NavMain items={APP_SIDEBAR_DATA.navMain} />
+				<NavProjects projects={APP_SIDEBAR_DATA.projects} />
+				<NavSecondary
+					items={APP_SIDEBAR_DATA.navSecondary}
+					className="mt-auto"
+				/>
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				<NavUser user={APP_SIDEBAR_DATA.user} />
 			</SidebarFooter>
 		</Sidebar>
 	);
