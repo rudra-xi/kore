@@ -3,6 +3,7 @@
 import { Copy, Github, Mail } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { FOOTER_LINK_DATA } from "@/constants";
 import { Button } from "../ui/button";
 
 /**
@@ -12,9 +13,27 @@ import { Button } from "../ui/button";
 export const Footer = () => {
 	const currentYear: number = new Date().getFullYear();
 
-	const copyEmail = () => {
-		navigator.clipboard.writeText("xi.rudra.code@gmail.com");
-		toast.success("Email copied to clipboard!");
+	const copyEmail = async () => {
+		const email: string = "xi.rudra.code@gmail.com";
+
+		try {
+			// Check if the clipboard API is available
+			if (navigator.clipboard && window.isSecureContext) {
+				await navigator.clipboard.writeText(email);
+				toast.success("Email copied to clipboard!");
+			} else {
+				// Fallback for non-HTTPS or older mobile browsers
+				const textArea = document.createElement("textarea");
+				textArea.value = email;
+				document.body.appendChild(textArea);
+				textArea.select();
+				document.execCommand("copy");
+				document.body.removeChild(textArea);
+				toast.success("Email copied to clipboard!");
+			}
+		} catch (err: any) {
+			toast.error("Failed to copy email.", err.message);
+		}
 	};
 
 	return (
@@ -79,38 +98,16 @@ export const Footer = () => {
 							Quick Links
 						</span>
 						<ul className="space-y-2 text-sm font-medium">
-							<li>
-								<Link
-									href="/dashboard"
-									className="transition-colors hover:text-primary"
-								>
-									Dashboard
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/explore"
-									className="transition-colors hover:text-primary"
-								>
-									Explore
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/collection"
-									className="transition-colors hover:text-primary"
-								>
-									Collection
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/info"
-									className="transition-colors hover:text-primary"
-								>
-									Info
-								</Link>
-							</li>
+							{FOOTER_LINK_DATA.map(({ title, href }) => (
+								<li key={title}>
+									<Link
+										href={href}
+										className="transition-colors hover:text-primary"
+									>
+										{title}
+									</Link>
+								</li>
+							))}
 						</ul>
 					</nav>
 
