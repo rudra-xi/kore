@@ -1,5 +1,7 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer, Navigation } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -8,9 +10,8 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { AppProvider } from "@/context";
-import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
 
 export default function LayoutProvider({ children }: { children: ReactNode }) {
 	const pathname: string = usePathname();
@@ -44,6 +45,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
 						</SidebarInset>
 					</SidebarProvider>
 				)}
+				<Toaster position="top-center"/>
 			</ThemeProvider>
 		</AppProvider>
 	);
