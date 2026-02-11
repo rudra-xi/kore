@@ -204,6 +204,11 @@ export const APP_SIDEBAR_DATA = {
 	],
 };
 
+export interface FooterLink {
+	title: string;
+	href: string;
+}
+
 export const FOOTER_LINK_DATA = [
 	{ title: "Dashboard", href: "/dashboard" },
 	{ title: "Snippets", href: "/snippets" },
