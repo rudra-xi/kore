@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
+import type * as React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -46,7 +46,7 @@ function AvatarFallback({
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "bg-muted text-muted-foreground rounded-full flex size-full items-center justify-center text-sm group-data-[size=sm]/avatar:text-xs",
+        "bg-muted text-primary rounded-full flex size-full items-center justify-center text-sm group-data-[size=sm]/avatar:text-xs",
         className
       )}
       {...props}
