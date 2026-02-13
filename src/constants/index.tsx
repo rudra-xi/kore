@@ -80,8 +80,9 @@ export interface AppData {
 }
 
 export const APP_SIDEBAR_DATA = {
+	// NOTE: This is a FALLBACK/DEVELOPMENT user only
+	// NOTE: In production, this is overridden by the actual logged-in user from the database
 	user: {
-		// TODO: wire with auth/user from server/db
 		name: "rudra-xi",
 		email: "m@example.com",
 		avatar: "/avatars/rudra.jpg",
