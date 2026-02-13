@@ -19,7 +19,24 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_SIDEBAR_DATA } from "@/constants";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+/**
+ * AppSidebar component renders the main sidebar navigation for the application.
+ *
+ * This is a Client Component that includes user interaction elements such as navigation menus and user profile.
+ *
+ * @param props - Props for the Sidebar component extended with a user object.
+ * @param props.user - The current authenticated user object, used to display user-specific information in the sidebar footer.
+ *
+ * The sidebar contains:
+ * - A header with the application logo linking to the home page.
+ * - Main navigation menus for primary app sections and projects.
+ * - Secondary navigation menus for additional links.
+ * - A footer displaying user information and actions.
+ */
+export function AppSidebar({
+	user,
+	...props
+}: React.ComponentProps<typeof Sidebar> & { user: any }) {
 	return (
 		<Sidebar variant="sidebar" {...props}>
 			<SidebarHeader>
@@ -54,7 +71,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				/>
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={APP_SIDEBAR_DATA.user} />
+				{/* NOTE: This is a FALLBACK/DEVELOPMENT user only coming from
+					import { APP_SIDEBAR_DATA } from "@/constants"; */}
+				{/* <NavUser user={APP_SIDEBAR_DATA.user} /> */}
+				<NavUser user={user} />
 			</SidebarFooter>
 		</Sidebar>
 	);
