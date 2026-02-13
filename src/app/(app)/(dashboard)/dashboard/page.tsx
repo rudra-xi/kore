@@ -1,7 +1,8 @@
 
 export default function Dashboard() {
   return (
-    <section>
+	  <section>
+		  Dash
     </section>
   );
 }
