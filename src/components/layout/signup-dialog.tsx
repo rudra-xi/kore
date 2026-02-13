@@ -1,21 +1,26 @@
 "use client";
 
 import { SignupForm } from "../signup-form";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription, DialogTrigger
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
-export const SignUpDialog = () => {
+/**
+ * SignUpDialog component
+ * @description A client component that renders a signup dialog with a trigger element.
+ * @param {SignupDialogProps} props - Component props
+ * @param {React.ReactElement | ((props: any) => React.ReactElement)} props.trigger - The element or function that triggers the dialog
+ * @returns A dialog containing the SignupForm component
+ */
+interface SignupDialogProps {
+	trigger: React.ReactElement | ((props: any) => React.ReactElement);
+}
+
+export const SignUpDialog = ({ trigger }: SignupDialogProps) => {
 	return (
 		<div>
 			<Dialog>
-				<DialogTrigger>SignUp</DialogTrigger>
+				<DialogTrigger render={trigger} />
 				<DialogContent showCloseButton={false}>
-					<DialogDescription>
-						<SignupForm />
-					</DialogDescription>
+					<SignupForm />
 				</DialogContent>
 			</Dialog>
 		</div>
