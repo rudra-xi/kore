@@ -9,7 +9,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Kore | Code Snippets Manager",
+	title: {
+		default: "Kore",
+		absolute: "Kore | Code Snippets Manager",
+		template: "%s | Kore",
+	},
 	description:
 		"Kore is a fast, modern platform for developers to store, organize, and reuse their favorite code snippets. Built with Next.js 15.",
 	icons: {
@@ -70,9 +74,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${geistMono.variable} antialiased`}>
-				<LayoutProvider>
-					<main className={"page-padding overflow-x-hidden"}>{children}</main>
-				</LayoutProvider>
+				<LayoutProvider>{children}</LayoutProvider>
 			</body>
 		</html>
 	);
