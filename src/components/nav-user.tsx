@@ -1,5 +1,12 @@
 "use client";
 
+import {
+	ChevronsUpDownIcon,
+	LogOutIcon,
+	Settings2Icon,
+	UserIcon,
+} from "lucide-react";
+import { logoutAction } from "@/actions/auth-action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -16,15 +23,17 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import {
-	ChevronsUpDownIcon,
-	UserIcon,
-	Settings2Icon,
-	PaletteIcon,
-	KeyboardIcon,
-	LogOutIcon,
-} from "lucide-react";
 
+/**
+ * NavUser - Client Component
+ *
+ * Displays the current user's information (avatar, name, email) within a
+ * sidebar navigation. It integrates with a dropdown menu that offers actions
+ * like navigating to the user profile, account settings, and logging out.
+ * The component adapts its display based on the sidebar's mobile state.
+ *
+ * @param user - An object containing the user's `name`, `email`, and `avatar` URL.
+ */
 export function NavUser({
 	user,
 }: {
@@ -36,6 +45,8 @@ export function NavUser({
 }) {
 	const { isMobile } = useSidebar();
 
+	// Generates fallback initials from the user's name for the avatar.
+	// Falls back to 'KR' if the name is not available.
 	const initials =
 		user.name
 			?.split(" ")
@@ -79,6 +90,7 @@ export function NavUser({
 							<DropdownMenuLabel className="p-0 font-normal">
 								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 									<Avatar>
+										{/* FIXME: will be adding support for Avatar while making Profile or Setting page! */}
 										<AvatarImage
 											src={user.avatar}
 											alt={user.name}
@@ -114,7 +126,10 @@ export function NavUser({
 
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem className="text-destructive focus:text-destructive">
+						<DropdownMenuItem
+							className="text-destructive focus:text-destructive"
+							onClick={() => logoutAction()}
+						>
 							<LogOutIcon className="mr-2 size-4" />
 							<span>Log out</span>
 						</DropdownMenuItem>
