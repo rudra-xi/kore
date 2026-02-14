@@ -286,3 +286,15 @@ export const TIPS = [
 		desc: "Don't reinvent the wheel. Check 'Common' for standardized boilerplate code.",
 	},
 ];
+
+export const FEEDBACK_TYPES = {
+	BUG: "Bug Report",
+	FEATURE: "Feature Request",
+	UI_UX: "UI/UX Feedback",
+	PERFORMANCE: "Speed & Performance",
+	SECURITY: "Security Concern",
+	DOCUMENTATION: "Docs & Tutorials",
+	DX: "Developer Experience",
+	INTEGRATION: "API & Integrations",
+	OTHER: "Other",
+};
