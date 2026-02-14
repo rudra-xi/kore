@@ -62,5 +62,15 @@ model Snippet {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
+model Feedback {
+  id          String    @id @default(cuid())
+  type        String    // "BUG", "FEATURE", "UI_UX", "OTHER"
+  title       String
+  description String
+  email       String?
+  rating      Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
