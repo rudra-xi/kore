@@ -1,5 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { Footer, ThemeToggle } from "@/components/layout";
+import { DynamicBreadcrumbs, Footer, ThemeToggle } from "@/components/layout";
 import {
 	SidebarInset,
 	SidebarProvider,
@@ -29,10 +29,10 @@ export default async function DashboardLayout({
 			<SidebarInset>
 				{/* Sticky header for the dashboard */}
 				<header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
-					{/* TODO: add shadcn breadcrumbs */}
 					<div className={"flex items-center justify-center"}>
-						<SidebarTrigger className="-ml-1" />
+						<SidebarTrigger />
 						<div className="h-4 w-px bg-border mx-2" />
+						<DynamicBreadcrumbs />
 					</div>
 					<div className={"flex items-center justify-center"}>
 						<div className="h-4 w-px bg-border mx-2" />
