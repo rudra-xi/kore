@@ -1,0 +1,47 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"; // Ensure you have a prisma client instance here
+import { feedbackSchema } from "@/lib/feedback";
+import { z } from "zod";
+
+/**
+ * Server Component API Route for handling feedback submissions
+ *
+ * This endpoint accepts POST requests with feedback data, validates it,
+ * and saves it to the database using Prisma. It returns appropriate
+ * status codes and error messages for different failure scenarios.
+ */
+export async function POST(request: Request) {
+	try {
+		const body = await request.json();
+
+		const validated = feedbackSchema.parse(body);
+
+		const feedback = await prisma.feedback.create({
+			data: {
+				type: validated.type,
+				title: validated.title,
+				description: validated.description,
+				email: validated.email || null,
+				rating: validated.rating || null,
+			},
+		});
+
+		return NextResponse.json({
+			success: true,
+			data: feedback,
+		});
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return NextResponse.json(
+				{ error: "Invalid form data", details: error.errors },
+				{ status: 400 },
+			);
+		}
+
+		console.error("Supabase Error:", error);
+		return NextResponse.json(
+			{ error: "Failed to save feedback to database" },
+			{ status: 500 },
+		);
+	}
+}
