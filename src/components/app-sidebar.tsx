@@ -38,7 +38,7 @@ export function AppSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar> & { user: any }) {
 	return (
-		<Sidebar variant="sidebar" {...props}>
+		<Sidebar variant="sidebar" collapsible="icon" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
@@ -46,11 +46,11 @@ export function AppSidebar({
 							size="lg"
 							render={<Link href="/dashboard" />}
 						>
-							<div className="bg-sidebar-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg">
+							<div className="bg-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
 								<Image
 									src={logo}
 									alt="logo"
-									className="size-8"
+									className="size-6"
 								/>
 							</div>
 							<div className="grid flex-1 text-left text-sm leading-tight">
