@@ -9,7 +9,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
-export default async function DashboardLayout({
+export default async function MainAppLayout({
 	children,
 }: {
 	children: ReactNode;
