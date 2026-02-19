@@ -1,10 +1,6 @@
 import Link from "next/link";
-import {
-	FeatureTips,
-	GettingStarted,
-	HelpFaq,
-	HelpHero,
-} from "@/components/pages";
+import { SupportHeader } from "@/components/layout";
+import { FeatureTips, GettingStarted, HelpFaq } from "@/components/pages";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -14,31 +10,32 @@ import { Button } from "@/components/ui/button";
  */
 export default function Help() {
 	return (
-		<div className="max-w-4xl mx-auto space-y-12 pb-20">
-			<HelpHero />
+		<section>
+			<SupportHeader
+				head="Need help with"
+				extra="Kore?"
+				para="Quick answers for saving, finding, and organizing your snippets."
+			/>
+			<div className="max-w-4xl mx-auto space-y-12 pb-20">
+				<div className="grid gap-12">
+					<GettingStarted />
 
-			<div className="grid gap-12">
-				<GettingStarted />
+					<div className="grid md:grid-cols-2 gap-8 items-start">
+						<HelpFaq />
+						<FeatureTips />
+					</div>
 
-				<div className="grid md:grid-cols-2 gap-8 items-start">
-					<HelpFaq />
-					<FeatureTips />
+					<section className="bg-muted/50 rounded-xl p-8 text-center border">
+						<h3 className="text-lg font-semibold mb-2">
+							Didn't find what you're looking for?
+						</h3>
+						<Button
+							nativeButton={false}
+							render={<Link href="/feedback">Send Feedback</Link>}
+						/>
+					</section>
 				</div>
-
-				<section className="bg-muted/50 rounded-xl p-8 text-center border">
-					<h3 className="text-lg font-semibold mb-2">
-						Didn't find what you're looking for?
-					</h3>
-					<Button
-						nativeButton={false}
-						render={
-							<Link href="/feedback">
-								Send Feedback
-							</Link>
-						}
-					/>
-				</section>
 			</div>
-		</div>
+		</section>
 	);
 }
