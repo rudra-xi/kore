@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Ensure you have a prisma client instance here
-import { feedbackSchema } from "@/lib/feedback";
 import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { feedbackSchema } from "@/schema/feedback.schema";
 
 /**
  * Server Component API Route for handling feedback submissions
@@ -33,7 +33,14 @@ export async function POST(request: Request) {
 	} catch (error) {
 		if (error instanceof z.ZodError) {
 			return NextResponse.json(
-				{ error: "Invalid form data", details: error.errors },
+				{
+					error: "Invalid form data",
+					details: error.issues.map((issue) => ({
+						path: issue.path.join("."),
+						message: issue.message,
+						code: issue.code,
+					})),
+				},
 				{ status: 400 },
 			);
 		}
