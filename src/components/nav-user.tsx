@@ -1,12 +1,11 @@
 "use client";
 
-import {
-	ChevronsUpDownIcon,
-	LogOutIcon,
-	Settings2Icon,
-	UserIcon,
-} from "lucide-react";
-import { logoutAction } from "@/actions/auth-action";
+import { ChevronsUpDownIcon, LogOutIcon, User2Icon } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { logoutAction } from "@/actions/auth.action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -24,16 +23,6 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 
-/**
- * NavUser - Client Component
- *
- * Displays the current user's information (avatar, name, email) within a
- * sidebar navigation. It integrates with a dropdown menu that offers actions
- * like navigating to the user profile, account settings, and logging out.
- * The component adapts its display based on the sidebar's mobile state.
- *
- * @param user - An object containing the user's `name`, `email`, and `avatar` URL.
- */
 export function NavUser({
 	user,
 }: {
@@ -44,15 +33,44 @@ export function NavUser({
 	};
 }) {
 	const { isMobile } = useSidebar();
+	const router = useRouter();
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-	// Generates fallback initials from the user's name for the avatar.
-	// Falls back to 'KR' if the name is not available.
 	const initials =
 		user.name
 			?.split(" ")
 			.map((n) => n[0])
 			.join("")
 			.toUpperCase() || "KR";
+
+	const handleLogout = async () => {
+		try {
+			setIsLoggingOut(true);
+
+			toast.loading("Logging out...", {
+				id: "logout-toast",
+			});
+
+			// Call logout action (no redirect)
+			await logoutAction();
+
+			// Show success toast
+			toast.success("Logged out successfully!", {
+				id: "logout-toast",
+				description: "See you next time!",
+			});
+
+			// Redirect manually on client side
+			router.push("/");
+		} catch (error) {
+			toast.error("Failed to log out", {
+				id: "logout-toast",
+				description: "Please try again.",
+			});
+		} finally {
+			setIsLoggingOut(false);
+		}
+	};
 
 	return (
 		<SidebarMenu>
@@ -90,7 +108,6 @@ export function NavUser({
 							<DropdownMenuLabel className="p-0 font-normal">
 								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 									<Avatar>
-										{/* FIXME: will be adding support for Avatar while making Profile or Setting page! */}
 										<AvatarImage
 											src={user.avatar}
 											alt={user.name}
@@ -115,23 +132,22 @@ export function NavUser({
 
 						<DropdownMenuGroup>
 							<DropdownMenuItem>
-								<UserIcon className="mr-2 size-4" />
-								<span>Profile</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<Settings2Icon className="mr-2 size-4" />
-								<span>Account settings</span>
+								<User2Icon className="mr-2 size-4" />
+								<Link href="/settings/profile">Profile</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 
 						<DropdownMenuSeparator />
 
 						<DropdownMenuItem
-							className="text-destructive focus:text-destructive"
-							onClick={() => logoutAction()}
+							className="text-destructive focus:text-destructive data-disabled:opacity-50"
+							onClick={handleLogout}
+							disabled={isLoggingOut}
 						>
 							<LogOutIcon className="mr-2 size-4" />
-							<span>Log out</span>
+							<span>
+								{isLoggingOut ? "Logging out..." : "Log out"}
+							</span>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

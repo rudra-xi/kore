@@ -1,7 +1,12 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { loginAction } from "@/actions/auth-action";
+import { loginAction } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -10,44 +15,70 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+	Field,
+	FieldContent,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import {
+	type LoginForm as LoginFormType,
+	loginSchema,
+} from "@/schema/auth.schema";
 
 /**
  * LoginForm - Client Component
  *
- * Renders a form for user login. It leverages React's `useActionState` hook
- * to manage the state of the `loginAction` Server Action. This component
- * handles user input for email and password, displays appropriate toasts
- * for success or error messages, and redirects the user to the dashboard upon successful login.
- * It also includes a link for password recovery.
- *
- * @param props - Accepts standard HTML div attributes and a `className` prop for custom styling.
+ * Renders a form for user login. It leverages React Hook Form with Zod validation
+ * for real-time validation and error display.
  */
 export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
-	const [state, formAction] = useActionState(loginAction, null);
+	const router = useRouter();
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	/**
-	 * Effect hook to handle side effects based on the login action state.
-	 * - If `state.success` is true, a success toast is shown, and the user is redirected to the dashboard.
-	 * - If `state.error` is present, an error toast is displayed with the error message.
-	 *
-	 * @dependency state - The effect re-runs whenever the `state` object changes, ensuring UI updates reflect the latest action result.
-	 */
-	useEffect(() => {
-		if (state?.success) {
-			toast.success("Login Successfully! Redirecting...");
-			// Use this for a clean break from the Landing Page Modal
-			window.location.href = "/dashboard";
+	const form = useForm<LoginFormType>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+		mode: "onChange", // Enables real-time validation
+	});
+
+	async function onSubmit(data: LoginFormType) {
+		setIsSubmitting(true);
+
+		try {
+			// Convert the data object to FormData
+			const formData = new FormData();
+			formData.append("email", data.email);
+			formData.append("password", data.password);
+
+			// Call the server action
+			const result = await loginAction({ error: null }, formData);
+
+			// Handle the response
+			if (result?.error) {
+				toast.error(result.error);
+			} else {
+				toast.success("Login Successfully! Redirecting...");
+				// Use router for client-side navigation
+				router.push("/dashboard");
+			}
+		} catch (err) {
+			toast.error(
+				err instanceof Error ? err.message : "Failed to login.",
+			);
+		} finally {
+			setIsSubmitting(false);
 		}
-		if (state?.error) {
-			toast.error(state.error);
-		}
-	}, [state]);
+	}
 
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -59,41 +90,74 @@ export function LoginForm({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form action={formAction}>
-						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor="email">Email</FieldLabel>
-								<Input
-									name="email"
-									id="email"
-									type="email"
-									placeholder="m@example.com"
-									required
-								/>
-							</Field>
-							<Field>
-								<div className="flex items-center">
-									<FieldLabel htmlFor="password">
-										Password
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-6"
+					>
+						<Controller
+							name="email"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>
+										Email
 									</FieldLabel>
-									<Link
-										href="#"
-										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-									>
-										Forgot your password?
-									</Link>
-								</div>
-								<Input
-									name="password"
-									id="password"
-									type="password"
-									required
-								/>
-							</Field>
-							<Field>
-								<Button type="submit">Login</Button>
-							</Field>
-						</FieldGroup>
+									<Input
+										{...field}
+										id={field.name}
+										type="email"
+										placeholder="m@example.com"
+										aria-invalid={fieldState.invalid}
+										autoComplete="email"
+									/>
+									{fieldState.invalid && (
+										<FieldError
+											errors={[fieldState.error]}
+										/>
+									)}
+								</Field>
+							)}
+						/>
+
+						<Controller
+							name="password"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<div className="flex items-center justify-between">
+										<FieldLabel htmlFor={field.name}>
+											Password
+										</FieldLabel>
+										<Link
+											href="#"
+											className="text-sm underline-offset-4 hover:underline"
+										>
+											Forgot your password?
+										</Link>
+									</div>
+									<Input
+										{...field}
+										id={field.name}
+										type="password"
+										aria-invalid={fieldState.invalid}
+										autoComplete="current-password"
+									/>
+									{fieldState.invalid && (
+										<FieldError
+											errors={[fieldState.error]}
+										/>
+									)}
+								</Field>
+							)}
+						/>
+
+						<Button
+							type="submit"
+							disabled={isSubmitting || !form.formState.isValid}
+							className="w-full"
+						>
+							{isSubmitting ? "Logging in..." : "Login"}
+						</Button>
 					</form>
 				</CardContent>
 			</Card>
