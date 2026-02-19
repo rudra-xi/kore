@@ -2,52 +2,49 @@
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
+import { loginSchema, signUpSchema } from "@/schema/auth.schema";
 import { createAuthUser, getUserByEmail } from "@/services/auth.service";
 import type { ActionState } from "@/types/actions";
-
-// Define TypeScript interfaces for better type safety
-interface SignUpFormData {
-	name: string;
-	email: string;
-	password: string;
-}
-
-interface LoginFormData {
-	email: string;
-	password: string;
-}
 
 /**
  * signUpAction
  * @description Server action that handles user registration.
  * Creates a new user in the database and establishes an authentication session.
  * @param {ActionState} state - Current action state
- * @param {SignUpFormData} formData - Form data containing user registration details
+ * @param {FormData} formData - Form data containing user registration details
  * @returns {Promise<ActionState>} The updated action state with success or error information
  */
 export async function signUpAction(
 	state: ActionState,
 	formData: FormData,
 ): Promise<ActionState> {
-	const name = formData.get("name") as string;
-	const email = formData.get("email") as string;
-	const password = formData.get("password") as string;
-
-	if (!email || !password) return { error: "Missing fields." };
+	// Extract form data from the submitted login form
+	const rawData = {
+		name: formData.get("name") as string,
+		email: formData.get("email") as string,
+		password: formData.get("password") as string,
+	};
 
 	try {
+		// Validate with Zod schema to ensure data integrity and security
+		const validatedData = signUpSchema.parse(rawData);
+
 		/**
 		 * Check if user already exists to prevent duplicate registrations
 		 * This validation happens before creating the user to maintain data integrity
 		 */
-		const existingUser = await getUserByEmail(email);
+		const existingUser = await getUserByEmail(validatedData.email);
 		if (existingUser) return { error: "User already exists." };
 
 		/**
 		 * Create the new user in the database
 		 * This operation is wrapped in a try/catch to handle database errors
 		 */
-		await createAuthUser({ name, email, password });
+		await createAuthUser({
+			name: validatedData.name,
+			email: validatedData.email,
+			password: validatedData.password,
+		});
 
 		/**
 		 * Log the user in to establish the session cookie
@@ -55,8 +52,8 @@ export async function signUpAction(
 		 * The redirect happens after successful authentication
 		 */
 		await signIn("credentials", {
-			email,
-			password,
+			email: validatedData.email,
+			password: validatedData.password,
 			redirect: false,
 		});
 
@@ -64,7 +61,13 @@ export async function signUpAction(
 	} catch (err) {
 		// If it's a redirect error from Auth.js, we must re-throw it
 		if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
-		return { error: "Database error. Please try again.", err };
+
+		// Handle Zod validation errors
+		if (err instanceof Error && err.name === "ZodError") {
+			return { error: "Validation failed. Please check your input." };
+		}
+
+		return { error: "Database error. Please try again." };
 	}
 
 	// Redirect to dashboard after successful registration and login
@@ -76,32 +79,41 @@ export async function signUpAction(
  * @description Server action that handles user login.
  * Authenticates the user and establishes an authentication session.
  * @param {ActionState} state - Current action state
- * @param {LoginFormData} formData - Form data containing user login credentials
+ * @param {FormData} formData - Form data containing user login credentials
  * @returns {Promise<ActionState>} The updated action state with success or error information
  */
 export async function loginAction(
 	state: ActionState,
 	formData: FormData,
 ): Promise<ActionState> {
-	const email = formData.get("email") as string;
-	const password = formData.get("password") as string;
-
-	if (!email || !password) return { error: "Please fill in all fields." };
+	// Extract form data from the submitted login form
+	const rawData = {
+		email: formData.get("email") as string,
+		password: formData.get("password") as string,
+	};
 
 	try {
+		// Validate with Zod schema to ensure data integrity and security
+		const validatedData = loginSchema.parse(rawData);
+
 		/**
 		 * Authenticate the user using NextAuth.js
 		 * We use redirect: false to prevent automatic navigation
 		 * This allows the client-side form to handle the success state
 		 */
 		await signIn("credentials", {
-			email,
-			password,
-			redirect: false, // <--- STOP automatic redirect
+			email: validatedData.email,
+			password: validatedData.password,
+			redirect: false,
 		});
 
-		return { success: true }; // <--- NOW your LoginForm's useEffect will fire!
+		return { success: true };
 	} catch (error) {
+		// Handle Zod validation errors
+		if (error instanceof Error && error.name === "ZodError") {
+			return { error: "Please enter a valid email and password." };
+		}
+
 		if (error instanceof AuthError) {
 			return { error: "Invalid email or password." };
 		}
@@ -112,9 +124,17 @@ export async function loginAction(
 /**
  * logoutAction
  * @description Server action that handles user logout.
- * Terminates the user session and redirects to the homepage.
- * @returns  Resolves when logout is complete
+ * Terminates the user session WITHOUT redirecting.
+ * The redirect is handled client-side to allow for toast notifications.
+ * @returns {Promise<void>}
  */
 export async function logoutAction() {
-	await signOut({ redirectTo: "/" });
+	try {
+		// Sign out without redirecting
+		await signOut({ redirect: false });
+	} catch (error) {
+		// Log any errors but don't throw them
+		console.error("Logout error:", error);
+		throw new Error("Failed to log out");
+	}
 }
