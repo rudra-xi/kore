@@ -47,16 +47,18 @@ export function DynamicBreadcrumbs() {
 
 							return (
 								<React.Fragment key={href}>
+									{/* Render separator for all items except the first one */}
+									{index > -1 && (
+										<BreadcrumbSeparator className="hidden md:block" />
+									)}
+
 									<BreadcrumbItem className="text-xs">
 										{isLast ? (
-											<>
-												<BreadcrumbSeparator className="hidden md:block" />
-												<BreadcrumbPage
-													className={"text-primary"}
-												>
-													{title}
-												</BreadcrumbPage>
-											</>
+											<BreadcrumbPage
+												className={"text-primary"}
+											>
+												{title}
+											</BreadcrumbPage>
 										) : (
 											<BreadcrumbLink
 												href={href}
