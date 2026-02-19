@@ -1,17 +1,22 @@
 /**
- * Represents the state returned by Server Actions.
- * This type is used to track the outcome of asynchronous operations,
- * typically used in conjunction with the `useActionState` (or `useFormState`) hook.
+ * ActionState
  *
- * @property error - A user-friendly error message for UI display.
- * @property success - Indicates whether the operation completed successfully.
- * @property err - The raw error object or unknown catch-all for debugging purposes.
+ * Represents the state structure returned by Next.js Server Actions.
+ * Used to synchronize server-side results with the UI, typically via the `useActionState` hook.
+ *
+ * @property error - A human-readable error string for display in the UI.
+ * @property success - A flag indicating whether the operation was performed successfully.
+ * @property err - The raw error object for logging or low-level debugging.
+ * @property message - A general-purpose message (e.g., a success confirmation).
+ * @property details - Supplementary data or metadata related to the action's outcome.
  */
 export type ActionState =
 	| {
-			error?: string;
+			error?: string | null;
 			success?: boolean;
 			err?: unknown;
+			message?: string;
+			details?: unknown;
 	  }
 	| null
 	| undefined;
