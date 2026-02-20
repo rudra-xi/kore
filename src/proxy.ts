@@ -7,19 +7,27 @@ import { auth } from "@/lib/auth";
  */
 export default auth((req) => {
 	const isLoggedIn = !!req.auth;
+	const { nextUrl } = req;
 
-	const isAuthPage =
-		req.nextUrl.pathname.startsWith("/dashboard") ||
-		req.nextUrl.pathname.startsWith("/snippet") ||
-		req.nextUrl.pathname.startsWith("/library") ||
-		req.nextUrl.pathname.startsWith("/collections");
+	const isPublicRoute = nextUrl.pathname === "/";
+
+	const isAuthRoute =
+		nextUrl.pathname.startsWith("/dashboard") ||
+		nextUrl.pathname.startsWith("/snippet") ||
+		nextUrl.pathname.startsWith("/library") ||
+		nextUrl.pathname.startsWith("/collections");
 
 	/**
 	 * Redirects unauthenticated users to the root page when attempting to
 	 * access restricted application routes.
 	 */
-	if (isAuthPage && !isLoggedIn) {
+	if (isAuthRoute && !isLoggedIn) {
 		return Response.redirect(new URL("/", req.nextUrl));
+	}
+
+	// Redirects authenticated users to the Dashboard page
+	if (isPublicRoute && isLoggedIn) {
+		return Response.redirect(new URL("/dashboard", req.nextUrl));
 	}
 });
 
