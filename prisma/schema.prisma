@@ -17,8 +17,8 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
-  image         String?
+  avatar        String?
+  role			String?
   password      String?   // Add this for Credentials login
   accounts      Account[]
   sessions      Session[]
