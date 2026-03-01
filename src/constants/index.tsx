@@ -1,8 +1,11 @@
 import {
 	BadgeInfoIcon,
 	BookOpenIcon,
+	Code2,
 	Code2Icon,
+	Edit3,
 	FolderGit2Icon,
+	GitFork,
 	Grid2X2Icon,
 	LayoutDashboardIcon,
 	LogIn,
@@ -12,6 +15,7 @@ import {
 	SendIcon,
 	Settings2Icon,
 	SparklesIcon,
+	Star,
 	WrenchIcon,
 } from "lucide-react";
 
@@ -227,4 +231,43 @@ export const FEEDBACK_TYPES = {
 	DX: "Developer Experience",
 	INTEGRATION: "API & Integrations",
 	OTHER: "Other",
+};
+
+export const LORELEI_GALLERY = [
+	"Kane",
+	"Derek",
+	"Zoie",
+	"Amie",
+	"Andrea",
+	"Felix",
+	"Aneka",
+	"Kingston",
+	"Nolan",
+	"Leah",
+	"Eliza",
+	"Luis",
+];
+
+export const ROLES = [
+	"Frontend",
+	"Backend",
+	"Fullstack",
+	"Mobile",
+	"DevOps",
+	"UI/UX",
+	"Other",
+] as const;
+
+export const ACTIVITY_ICONS = {
+	create: Code2,
+	update: Edit3,
+	favorite: Star,
+	fork: GitFork,
+};
+
+export const ACTIVITY_COLORS = {
+	create: "text-blue-500",
+	update: "text-green-500",
+	favorite: "text-yellow-500",
+	fork: "text-purple-500",
 };
