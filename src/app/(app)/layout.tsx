@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { DynamicBreadcrumbs, Footer, ThemeToggle } from "@/components/layout";
 import {
@@ -6,8 +8,6 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import type { ReactNode } from "react";
 
 export default async function MainAppLayout({
 	children,
@@ -21,10 +21,10 @@ export default async function MainAppLayout({
 	const user = {
 		name: session?.user?.name || "User",
 		email: session?.user?.email || "",
-		avatar: session?.user?.image || "",
+		avatar: session?.user?.avatar || "",
 	};
 	return (
-		<SidebarProvider>
+		<SidebarProvider suppressHydrationWarning>
 			<AppSidebar user={user} />
 			<SidebarInset>
 				{/* Sticky header for the dashboard */}
