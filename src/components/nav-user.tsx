@@ -3,6 +3,7 @@
 import { ChevronsUpDownIcon, LogOutIcon, User2Icon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { logoutAction } from "@/actions/auth.action";
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export function NavUser({
-	user,
+	user: initialUser,
 }: {
 	user: {
 		name: string;
@@ -36,12 +37,19 @@ export function NavUser({
 	const router = useRouter();
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+	// Get session data for real-time updates
+	const { data: session, status } = useSession();
+
+	// Use session data if available (it updates after profile changes), otherwise fall back to props
+	const user = session?.user || initialUser;
+
 	const initials =
 		user.name
 			?.split(" ")
 			.map((n) => n[0])
 			.join("")
-			.toUpperCase() || "KR";
+			.toUpperCase()
+			?.slice(0, 2) || "U";
 
 	const handleLogout = async () => {
 		try {
@@ -51,17 +59,15 @@ export function NavUser({
 				id: "logout-toast",
 			});
 
-			// Call logout action (no redirect)
 			await logoutAction();
 
-			// Show success toast
 			toast.success("Logged out successfully!", {
 				id: "logout-toast",
 				description: "See you next time!",
 			});
 
-			// Redirect manually on client side
 			router.push("/");
+			router.refresh();
 		} catch (error) {
 			toast.error("Failed to log out", {
 				id: "logout-toast",
@@ -71,6 +77,10 @@ export function NavUser({
 			setIsLoggingOut(false);
 		}
 	};
+
+	const avatarUrl = user.avatar
+		? `https://api.dicebear.com/9.x/lorelei/svg?seed=${user.avatar}&radius=50`
+		: `https://api.dicebear.com/9.x/lorelei/svg?seed=Kane&radius=50`;
 
 	return (
 		<SidebarMenu>
@@ -85,7 +95,7 @@ export function NavUser({
 						}
 					>
 						<Avatar>
-							<AvatarImage src={user.avatar} alt={user.name} />
+							<AvatarImage src={avatarUrl} alt={user.name} />
 							<AvatarFallback>{initials}</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
@@ -109,7 +119,7 @@ export function NavUser({
 								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 									<Avatar>
 										<AvatarImage
-											src={user.avatar}
+											src={avatarUrl}
 											alt={user.name}
 										/>
 										<AvatarFallback>
@@ -131,10 +141,17 @@ export function NavUser({
 						<DropdownMenuSeparator />
 
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<User2Icon className="mr-2 size-4" />
-								<Link href="/settings/profile">Profile</Link>
-							</DropdownMenuItem>
+							<DropdownMenuItem
+								render={
+									<Link
+										href="/settings/profile"
+										className="flex items-center"
+									>
+										<User2Icon className="mr-2 size-4" />
+										<span>Profile</span>
+									</Link>
+								}
+							/>
 						</DropdownMenuGroup>
 
 						<DropdownMenuSeparator />
