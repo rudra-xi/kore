@@ -14,3 +14,10 @@ export * from "./info/tech-stack";
 export * from "./info/problem";
 export * from "./info/planning";
 
+export * from "./profile/profile-wrapper";
+export * from "./profile/avatar-picker";
+export * from "./profile/profile-form";
+export * from "./profile/recent-activity";
+export * from "./profile/profile-stat";
+export * from "./profile/user-card";
+export * from "./profile/edit-form";
