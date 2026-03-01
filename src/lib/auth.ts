@@ -16,6 +16,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 	 * as Auth.js does not support database-backed sessions for this provider type.
 	 */
 	session: { strategy: "jwt" },
+	callbacks: {
+		// 1. Add custom fields to the JWT
+		async jwt({ token, user, trigger, session }) {
+			// Initial sign-in
+			if (user) {
+				token.role = user.role;
+				token.avatar = user.avatar;
+			}
+
+			// Handle session updates (the "Refresh")
+			if (trigger === "update" && session) {
+				token = { ...token, ...session };
+			}
+			return token;
+		},
+		// 2. Pass data from JWT to the session object
+		async session({ session, token }) {
+			if (session.user) {
+				session.user.role = token.role as string;
+				session.user.avatar = token.avatar as string;
+			}
+			return session;
+		},
+	},
 	pages: {
 		signIn: "/", // Redirect destination for unauthenticated access attempts
 	},
