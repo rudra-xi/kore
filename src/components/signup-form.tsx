@@ -44,31 +44,35 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 			password: "",
 			confirmPassword: "",
 		},
-		mode: "onChange", // Enables real-time validation
+		mode: "onChange",
 	});
 
 	async function onSubmit(data: SignUpFormType) {
 		setIsSubmitting(true);
 
 		try {
-			// Convert the data object to FormData
 			const formData = new FormData();
 			formData.append("name", data.name);
 			formData.append("email", data.email);
 			formData.append("password", data.password);
 			formData.append("confirm-password", data.confirmPassword);
 
-			// Call the server action
 			const result = await signUpAction({ error: null }, formData);
 
 			// Handle the response
 			if (result?.error) {
 				toast.error(result.error);
-			} else {
+			} else if (result?.success) {
 				toast.success("Account Created! Redirecting...");
 				router.push("/dashboard");
 			}
 		} catch (err) {
+			// Check if it's a redirect error (successful case)
+			if (err instanceof Error && err.message === "NEXT_REDIRECT") {
+				// This is actually a success case - redirect is happening
+				return;
+			}
+
 			toast.error(
 				err instanceof Error
 					? err.message

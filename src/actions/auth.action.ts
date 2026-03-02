@@ -18,60 +18,50 @@ export async function signUpAction(
 	state: ActionState,
 	formData: FormData,
 ): Promise<ActionState> {
-	// Extract form data from the submitted login form
+	// Extract ALL form data including confirmPassword
 	const rawData = {
 		name: formData.get("name") as string,
 		email: formData.get("email") as string,
 		password: formData.get("password") as string,
+		confirmPassword: formData.get("confirm-password") as string, // Add this line
 	};
 
 	try {
 		// Validate with Zod schema to ensure data integrity and security
 		const validatedData = signUpSchema.parse(rawData);
 
-		/**
-		 * Check if user already exists to prevent duplicate registrations
-		 * This validation happens before creating the user to maintain data integrity
-		 */
+		// Check if user already exists
 		const existingUser = await getUserByEmail(validatedData.email);
 		if (existingUser) return { error: "User already exists." };
 
-		/**
-		 * Create the new user in the database
-		 * This operation is wrapped in a try/catch to handle database errors
-		 */
+		// Create the new user in the database
 		await createAuthUser({
 			name: validatedData.name,
 			email: validatedData.email,
 			password: validatedData.password,
 		});
 
-		/**
-		 * Log the user in to establish the session cookie
-		 * We use redirect: false to prevent automatic navigation
-		 * The redirect happens after successful authentication
-		 */
+		// Log the user in
 		await signIn("credentials", {
 			email: validatedData.email,
 			password: validatedData.password,
 			redirect: false,
 		});
 
-		// Redirect must happen OUTSIDE the try/catch to avoid catching redirect errors
+		// Return success instead of redirecting directly
+		return { success: true };
 	} catch (err) {
-		// If it's a redirect error from Auth.js, we must re-throw it
-		if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
+		// Check if it's a redirect error and re-throw it
+		if (err instanceof Error && err.message === "NEXT_REDIRECT") {
+			throw err; // Re-throw redirect errors
+		}
 
-		// Handle Zod validation errors
 		if (err instanceof Error && err.name === "ZodError") {
 			return { error: "Validation failed. Please check your input." };
 		}
 
 		return { error: "Database error. Please try again." };
 	}
-
-	// Redirect to dashboard after successful registration and login
-	redirect("/dashboard");
 }
 
 /**
